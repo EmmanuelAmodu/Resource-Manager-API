@@ -1,36 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ReadHandler_1 = require("../Services/ReadHandler");
-var CreateHandler_1 = require("../Services/CreateHandler");
+const AuthenticationService_1 = require("../Services/AuthenticationService");
 exports.router = [
     {
-        method: "get",
-        path: "/api/read/:database",
-        handlerfunc: function (request, response) {
-            var getServ = new ReadHandler_1.ReadHandler(request, response);
-            getServ.runQuery();
-        }
-    },
-    {
         method: "post",
-        path: "/api/create/:database",
-        handlerfunc: function (request, response) {
-            var getServ = new CreateHandler_1.CreateHandler(request, response);
-            getServ.runQuery();
-        }
-    },
-    {
-        method: "put",
-        path: "/api/:database",
-        handlerfunc: function (request, response) {
-            response.send({ "msg": "nothing implemented" });
-        }
-    },
-    {
-        method: "delete",
-        path: "/api/:database",
-        handlerfunc: function (request, response) {
-            response.send({ "msg": "nothing implemented" });
+        path: "/login",
+        handlerfunc: function (req, res) {
+            console.log("hit end point");
+            const getServ = new AuthenticationService_1.AuthenticationService();
+            getServ.login().then(data => res.send(data)).catch(err => res.send(err));
         }
     }
 ];

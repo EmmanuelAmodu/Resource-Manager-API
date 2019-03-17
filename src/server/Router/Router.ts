@@ -1,14 +1,15 @@
 import { IRoutes } from "./IRoutes";
 import * as Express from 'express';
-import { AuhenticationService } from '../Services/AuhenticationService';
+import { AuthenticationService } from '../Services/AuthenticationService';
 
 export const router: IRoutes[] = [
     {
         method: "post",
         path: "/login",
-        handlerfunc: function(request: Express.Request, response: Express.Response) {
-            const getServ = new AuhenticationService(request, response);
-            getServ.run();
+        handlerfunc: function(req, res) {
+            console.log("hit end point");
+            const getServ = new AuthenticationService();
+            getServ.login().then(data => res.send(data)).catch(err => res.send(err));
         }
     }
 ];
