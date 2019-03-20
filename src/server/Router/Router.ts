@@ -1,7 +1,5 @@
 import { IRoutes } from "./IRoutes";
-import * as Express from 'express';
 import { AuthenticationService } from '../Services/AuthenticationService';
-import { stringify } from "querystring";
 
 export const router: IRoutes[] = [
     {
