@@ -6,18 +6,18 @@ export class AuthenticationService {
 
     constructor(private auth: any){}
 
-    public get userDetails() {
+    public get userData() {
         return this.getUserDetails();
     }
 
     public get isloggedIn() {
-        return this.checkIfLoggedIn(this.auth);
+        return this.checkIfLoggedIn();
     }
 
     public login() {
         const that = this;
         return new Promise<any>(function(resolve, reject) {
-            that.getUserDetails().then(res => {
+            that.userDetail().then(res => {
                 if (res[0].username == that.auth.username) {
                     that.getToken({username: res[0].username}).then(tokenInfo => {
                         resolve(tokenInfo);
@@ -56,23 +56,31 @@ export class AuthenticationService {
         const that = this;
         return new Promise<any>(function(resolve, reject) {
             that.isloggedIn.then(res => {
-                res ? that.openDB('usertable', that.auth).read()
+                res ? that.openDB('usertable', {username: that.auth.username}).read()
                 .then(res => resolve(res))
                     .catch(err => reject(err)) :
                 reject({"err": "authentication failed"});
-            })
-
+            }).catch(err => reject({"err": "error getting userdetails"}));
         });
     }
 
-    private checkIfLoggedIn(usertoken: {username: string, token: string}) {
+    private userDetail(){
+        const that = this;
+        return new Promise<any>(function(resolve, reject) {
+            that.openDB('usertable', that.auth).read()
+                .then(res => resolve(res))
+                    .catch(err => reject(err));
+        });
+    }
+
+    private checkIfLoggedIn() {
         const that = this;
         return new Promise<boolean>(function(resolve, reject) {
-            usertoken.token ? 
-            that.validateToken({username: usertoken.username}, [usertoken])
-                .then(res => res.username == usertoken.username ? resolve(true) : resolve(false))
-                    .catch(err =>  reject(err)) :
-            reject({"err": "token not defined"});
+            that.auth.token ? 
+            that.validateToken({username: that.auth.username}, [that.auth])
+                .then(res => {
+                    res[0].username == that.auth.username ? resolve(true) : resolve(false)
+                }).catch(err =>  reject(err)) : reject({"err": "token not defined"});
         });
     }
 
@@ -94,8 +102,9 @@ export class AuthenticationService {
             if(data.length == 1) {
                 let expiry = parseInt(data[0].expiry);
                 if (new Date().getTime() >= expiry) {
-                    that.logout(update);
-                    reject({"err": "token expired"});
+                    that.logout(update)
+                        .then(res => reject({"err": "token expired"}))
+                            .catch(res => reject({"err": "error validating user"}));
                 } else resolve(data);
             }
             else if (data.length > 1) {
@@ -111,12 +120,12 @@ export class AuthenticationService {
         });
     }
 
-    private deleteToken(usertoken: any, callback?) {
+    private deleteToken(usertoken: any) {
         const that = this;
         return new Promise<UserToken>(function(resolve, reject) {
-            that.openDB("usertoken", usertoken).delete().then(mes => {
-                resolve(usertoken);
-            });
+            that.openDB("usertoken", usertoken).delete()
+                .then(mes => resolve(usertoken))
+                    .catch(err => reject(err));
         });
     }
 
