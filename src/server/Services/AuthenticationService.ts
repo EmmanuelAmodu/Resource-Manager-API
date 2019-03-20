@@ -3,23 +3,33 @@ import { UserToken } from '../Model/Interface';
 import * as crypto from 'crypto';
 
 export class AuthenticationService {
-    public userDetails: Promise<any>;
-    public auth: any = {
-        "username": "EAmodu",
-        "password": "gyuftydycfgxgf"
-    };
 
-    constructor(/*private auth: any*/){}
+    constructor(private auth: any){}
+
+    public get userDetails() {
+        return this.getUserDetails();
+    }
 
     private openDB(table: string, body: any): OpenDBConnector {
         const openDB: OpenDBConnector = new OpenDBConnector(table, body);
         return openDB;
     }
 
-    public login() {
+    private getUserDetails(){
         const that = this;
         return new Promise<any>(function(resolve, reject) {
             that.openDB('usertable', that.auth).read().then(res => {
+                resolve(res);
+            }).catch(err => {
+                reject(err)
+            });
+        });
+    }
+
+    public login() {
+        const that = this;
+        return new Promise<any>(function(resolve, reject) {
+            that.getUserDetails().then(res => {
                 if (res[0].username == that.auth.username) {
                     that.getToken({username: res[0].username}).then(tokenInfo => {
                         resolve(tokenInfo);
@@ -30,9 +40,14 @@ export class AuthenticationService {
         })
     }
 
+    private checkIfLoggedIn() {
+
+    }
+
     public logout() {
+        const that = this;
         return new Promise<any>(function(resolve, reject) {
-            this.deleteToken(this.auth).then(res => {
+            that.deleteToken(that.auth).then(res => {
                 resolve(res);
             }).catch(err => {
                 reject({"status": "login failed"});
@@ -40,49 +55,60 @@ export class AuthenticationService {
         });
     }
 
-    private getToken(update: any): Promise<UserToken> {
+    private getToken(update: any): Promise<any> {
         const that = this;
-        return new Promise<UserToken>(function(resolve, reject) {
+        return new Promise<any>(function(resolve, reject) {
             that.openDB("usertoken", update)
                 .read().then(data => {
-                    console.log(data);
-                    if(data.length == 1) {
-                        let expiry = parseInt(data[0].expiry);
-                        new Date().getTime() >= expiry ? 
-                            that.deleteToken(data[0], that.setToken).then(e => {
-                                resolve(e);
-                            }).catch(err => reject({"status": "login failed at deleteToken(), please try again"})) :
-                            resolve(data)
-                    }
-                    else if (data.length > 1) that.deleteToken(data[0]);
-                    else if (data.length == 0) {
-                        that.setToken(update).then(res => {resolve(res)}).catch((err => reject(err)));
-                    }
+                    that.validateToken(update, data).then(res => {
+                        resolve(res);
+                    }).catch(err => reject({"status": "login failed at getToken(), please try again"}));
                 }).catch(err => reject({"status": "login failed at getToken(), please try again"}));
         });
     }
 
-    private deleteToken(usertoken: UserToken, callback?) {
+    private validateToken(update, data) {
         const that = this;
-        return new Promise<UserToken>(function(resolve, reject) {
-            that.openDB("usertoken", usertoken)
-                .delete().then(mes => {
-                    if (callback) {
-                        callback(usertoken).then(d => {
-                            console.log(d)
-                            d.ok == 1 ? resolve(d) : reject({"faled": "re"});
-                        }).catch(err => reject({"status": "login failed at callback(), please try again"}));
-                    }
-                    resolve(usertoken);
-                });
+        return new Promise<any>(function(resolve, reject) {
+            console.log(data, data.length);
+            if(data.length == 1) {
+                let expiry = parseInt(data[0].expiry);
+                console.log("new Date().getTime() >= expiry", new Date().getTime() >= expiry);
+                if (new Date().getTime() >= expiry) {
+                    that.logout().then(res => {
+                        resolve({"err": "token expired"});
+                    });
+                }
+            }
+            else if (data.length > 1) {
+                that.deleteToken(update).then(dres => {
+                    console.log("dres", dres);
+                    that.setToken(update).then(res => {
+                        resolve(res);
+                    }).catch(err => reject({"status": "login failed at getToken(), there is more than one token for this user, trying to delete all and set another one"}));
+                }).catch(err => reject({"status": "login failed at getToken(), there is more than one token for this user, trying to delete all"}));;
+            }
+            else if (data.length == 0) {
+                that.setToken(update).then(res => {resolve(res)}).catch((err => reject(err)));
+            }
         });
     }
 
-    private setToken(usertoken: { username?: string; expiry?: any; token?: any; }) {
+    private deleteToken(usertoken: any, callback?) {
+        console.log("delete");
+        const that = this;
+        return new Promise<UserToken>(function(resolve, reject) {
+            that.openDB("usertoken", usertoken).delete().then(mes => {
+                resolve(usertoken);
+            });
+        });
+    }
+
+    private setToken(usertoken: any) {
         const that = this;
         return new Promise<any>(function(resolve, reject) { 
             crypto.randomBytes(48, function(err, buffer) {
-                usertoken.expiry = (new Date().getTime() + (4 * 60 * 60 * 1000)).toString();
+                usertoken.expiry = new Date().getTime() + (4 * 60 * 60 * 1000)
                 usertoken.token = buffer.toString('hex');
                 console.log(usertoken);
                 that.openDB("usertoken", usertoken).create().then(res => {

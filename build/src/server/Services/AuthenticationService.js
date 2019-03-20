@@ -3,15 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const OpenDBConnector_1 = require("../../OpenDBConnector/OpenDBConnector");
 const crypto = require("crypto");
 class AuthenticationService {
-    constructor( /*private auth: any*/) {
-        this.auth = {
-            "username": "EAmodu",
-            "password": "gyuftydycfgxgf"
-        };
+    constructor(auth) {
+        this.auth = auth;
     }
     openDB(table, body) {
         const openDB = new OpenDBConnector_1.OpenDBConnector(table, body);
         return openDB;
+    }
+    getUserDetails() {
     }
     login() {
         const that = this;
@@ -27,22 +26,39 @@ class AuthenticationService {
             }).catch(err => reject({ "error 2": err }));
         });
     }
+    logout() {
+        const that = this;
+        return new Promise(function (resolve, reject) {
+            that.deleteToken(that.auth).then(res => {
+                resolve(res);
+            }).catch(err => {
+                reject({ "status": "login failed" });
+            });
+        });
+    }
     getToken(update) {
         const that = this;
         return new Promise(function (resolve, reject) {
             that.openDB("usertoken", update)
                 .read().then(data => {
-                console.log(data);
+                console.log(data, data.length);
                 if (data.length == 1) {
                     let expiry = parseInt(data[0].expiry);
+                    console.log("new Date().getTime() >= expiry", new Date().getTime() >= expiry);
                     new Date().getTime() >= expiry ?
-                        that.deleteToken(data[0], that.setToken).then(e => {
+                        that.deleteToken(data[0], that.setToken.bind(that)).then(e => {
                             resolve(e);
                         }).catch(err => reject({ "status": "login failed at deleteToken(), please try again" })) :
                         resolve(data);
                 }
-                else if (data.length > 1)
-                    that.deleteToken(data[0]);
+                else if (data.length > 1) {
+                    that.deleteToken(data).then(res => {
+                        that.setToken(update).then(res => {
+                            resolve(res);
+                        }).catch(err => reject({ "status": "login failed at getToken(), there is more than one token for this user, trying to delete all and set another one" }));
+                    }).catch(err => reject({ "status": "login failed at getToken(), there is more than one token for this user, trying to delete all" }));
+                    ;
+                }
                 else if (data.length == 0) {
                     that.setToken(update).then(res => { resolve(res); }).catch((err => reject(err)));
                 }
@@ -50,6 +66,7 @@ class AuthenticationService {
         });
     }
     deleteToken(usertoken, callback) {
+        console.log("delete");
         const that = this;
         return new Promise(function (resolve, reject) {
             that.openDB("usertoken", usertoken)
@@ -60,7 +77,7 @@ class AuthenticationService {
                         d.ok == 1 ? resolve(d) : reject({ "faled": "re" });
                     }).catch(err => reject({ "status": "login failed at callback(), please try again" }));
                 }
-                resolve();
+                resolve(usertoken);
             });
         });
     }
