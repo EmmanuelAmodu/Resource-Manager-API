@@ -40,14 +40,14 @@ export class AuthenticationService {
         })
     }
 
-    private checkIfLoggedIn() {
+    private checkIfLoggedIn(usertoken: {username: string, token: string}) {
 
     }
 
-    public logout() {
+    public logout(usertoken?) {
         const that = this;
         return new Promise<any>(function(resolve, reject) {
-            that.deleteToken(that.auth).then(res => {
+            that.deleteToken(usertoken || that.auth).then(res => {
                 resolve(res);
             }).catch(err => {
                 reject({"status": "login failed"});
@@ -75,10 +75,10 @@ export class AuthenticationService {
                 let expiry = parseInt(data[0].expiry);
                 console.log("new Date().getTime() >= expiry", new Date().getTime() >= expiry);
                 if (new Date().getTime() >= expiry) {
-                    that.logout().then(res => {
+                    that.logout(update).then(res => {
                         resolve({"err": "token expired"});
                     });
-                }
+                } else resolve(data);
             }
             else if (data.length > 1) {
                 that.deleteToken(update).then(dres => {
