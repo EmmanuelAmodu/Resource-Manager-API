@@ -4,33 +4,42 @@ import { AuthenticationService } from '../Services/AuthenticationService';
 export const router: IRoutes[] = [
     {
         method: "post",
-        path: "/login",
+        path: "/auth/login",
         handlerfunc: function(req, res) {
-            const getServ = new AuthenticationService({
-                "username": "EAmodu",
-                "password": "gyuftydycfgxgf"
-            });
+            const getServ = new AuthenticationService(req.body);
             getServ.login().then(data => res.send(data)).catch(err => res.send(err));
         }
     },
     {
         method: "post",
-        path: "/logout",
+        path: "/auth/logout",
         handlerfunc: function(req, res) {
-            const getServ = new AuthenticationService({"username": "EAmodu"});
+            const getServ = new AuthenticationService(req.body);
             getServ.logout().then(data => res.send(data)).catch(err => res.send(err));
         }
     },
     {
-        method: "post",
-        path: "/user_details",
+        method: "get",
+        path: "/auth/isLoggedin",
         handlerfunc: function(req, res) {
-            console.log("req.body", req.body);
-            const getServ = new AuthenticationService({
-                "username": "EAmodu",
-                "token": "7f01de6431eaf91c3fdeafeebe43a03f0c36009f10bc33b57f5a76db5d0eea8f0c2e95ba6ebc626a0c5f5dae11efba53"
-            });
+            const getServ = new AuthenticationService(req.query);
+            getServ.isloggedIn.then(data => res.send(data)).catch(err => res.send(err));
+        }
+    },
+    {
+        method: "get",
+        path: "/auth/user_details",
+        handlerfunc: function(req, res) {
+            const getServ = new AuthenticationService(req.query);
             getServ.userData.then(data => res.send(data)).catch(err => res.send(err));
+        }
+    },
+    {
+        method: "post",
+        path: "/auth/create_user",
+        handlerfunc: function(req, res) {
+            const getServ = new AuthenticationService(req.body);
+            getServ.createUser().then(data => res.send(data)).catch(err => res.send(err));
         }
     }
 ];

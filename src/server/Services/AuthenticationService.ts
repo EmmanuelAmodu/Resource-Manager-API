@@ -39,17 +39,17 @@ export class AuthenticationService {
         });
     }
 
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
-    }
-
-    private createUser() {
+    public createUser() {
         const that = this;
         return new Promise<boolean>(function(resolve, reject) {
             that.openDB('usertable', that.auth).create()
                 .then(res => resolve(true))
                 .catch(res => reject(res))
         });
+    }
+
+    private openDB(table: string, body: any): OpenDBConnector {
+        return new OpenDBConnector(table, body);
     }
 
     private getUserDetails(){
