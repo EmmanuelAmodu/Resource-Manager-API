@@ -2,7 +2,7 @@ import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 import { AuthenticationService } from './AuthenticationService';
 
 class PermissionManager {
-    private isLoggedIn: Promise<boolean> = new AuthenticationService(this.auth).isloggedIn;;
+    private isLoggedIn: Promise<{status: boolean}> = new AuthenticationService(this.auth).isloggedIn;;
     /**
      *
      */

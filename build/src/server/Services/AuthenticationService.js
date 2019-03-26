@@ -64,12 +64,17 @@ class AuthenticationService {
     checkIfLoggedIn() {
         return new Promise((resolve, reject) => {
             this.auth.token.length > 0 ?
-                this.getToken({ username: this.auth.username, token: this.auth.token }).then(res => {
-                    this.validateToken({ username: this.auth.username }, res)
-                        .then(res => {
-                        res[0].token == this.auth.token ? resolve(true) : resolve(false);
-                        console.log("checkIfLoggedIn---> 3", res);
-                    }).catch(err => reject(err));
+                this.openDB("usertoken", this.auth).read().then(res => {
+                    if (res.length > 0) {
+                        console.log("checkIfLoggedIn -------> 1");
+                        this.validateToken({ username: this.auth.username }, res)
+                            .then(resp => {
+                            console.log("checkIfLoggedIn -------> 2");
+                            resp[0].token == this.auth.token ? resolve({ status: true }) : reject({ status: false });
+                        }).catch(err => reject(err));
+                    }
+                    else
+                        reject({ status: false });
                 }).catch(err => reject(err)) : reject({ "err": "token not defined" });
         });
     }
@@ -115,14 +120,14 @@ class AuthenticationService {
                 .catch(err => reject(err));
         });
     }
-    setToken(usertoken) {
+    setToken(userdetail) {
         return new Promise((resolve, reject) => {
             crypto.randomBytes(48, (err, buffer) => {
-                usertoken.expiry = new Date().getTime() + (4 * 60 * 60 * 1000);
-                usertoken.token = buffer.toString('hex');
-                this.openDB("usertoken", usertoken).create().then(res => {
+                userdetail.expiry = new Date().getTime() + (4 * 60 * 60 * 1000);
+                userdetail.token = buffer.toString('hex');
+                this.openDB("usertoken", userdetail).create().then(res => {
                     if (res.ok == 1)
-                        resolve(usertoken);
+                        resolve(userdetail);
                 }).catch(err => reject({ "status": "login failed at setToken(), please try again", err: err }));
             });
         });
