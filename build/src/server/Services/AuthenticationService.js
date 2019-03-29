@@ -66,10 +66,8 @@ class AuthenticationService {
             this.auth.token.length > 0 ?
                 this.openDB("usertoken", this.auth).read().then(res => {
                     if (res.length > 0) {
-                        console.log("checkIfLoggedIn -------> 1");
                         this.validateToken({ username: this.auth.username }, res)
                             .then(resp => {
-                            console.log("checkIfLoggedIn -------> 2");
                             resp[0].token == this.auth.token ? resolve({ status: true }) : reject({ status: false });
                         }).catch(err => reject(err));
                     }

@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const OpenDBConnector_1 = require("../../OpenDBConnector/OpenDBConnector");
-const AuthenticationService_1 = require("./AuthenticationService");
+// TODO DESIGN this class logic
 class PermissionManager {
     /**
      *
      */
-    constructor(auth) {
-        this.auth = auth;
-        this.isLoggedIn = new AuthenticationService_1.AuthenticationService(this.auth).isloggedIn;
+    constructor(username, path) {
+        this.username = username;
+        this.path = path;
     }
-    ;
-    get isPermitted() {
-        return null;
+    isPermitted() {
+        // TODO implement is permitted
+        return true;
     }
     openDB(table, body) {
         return new OpenDBConnector_1.OpenDBConnector(table, body);
@@ -24,3 +24,4 @@ class PermissionManager {
     getPermission() {
     }
 }
+exports.PermissionManager = PermissionManager;
