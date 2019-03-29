@@ -1,5 +1,4 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
-import { AuthenticationService } from './AuthenticationService';
 
 export class GridDataService {
     private queryObject: any;

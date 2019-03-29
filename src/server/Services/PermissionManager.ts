@@ -1,16 +1,15 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
-import { AuthenticationService } from './AuthenticationService';
 
-class PermissionManager {
-    private isLoggedIn: Promise<{status: boolean}> = new AuthenticationService(this.auth).isloggedIn;;
+// TODO DESIGN this class logic
+export class PermissionManager {
     /**
      *
      */
-    constructor(private auth) {
-    }
+    constructor(private username, private path) {}
 
-    public get isPermitted(){
-        return null
+    public isPermitted(){
+        // TODO implement is permitted
+        return true;
     }
 
     private openDB(table: string, body: any): OpenDBConnector {
