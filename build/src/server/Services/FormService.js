@@ -13,7 +13,7 @@ class FormService {
     }
     getFormData() {
         return new Promise((resolve, reject) => {
-            this.openDB("formData", { formname: this.params.formname }).read().then(res => {
+            this.openDB("formData", { form_name: this.params.form_name }).read().then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });

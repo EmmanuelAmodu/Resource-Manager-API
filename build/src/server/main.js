@@ -13,7 +13,7 @@ class ServerManager {
         this.routes = Router_1.router;
         this.multerU = multer();
         this.validateUser = (req, res, next) => {
-            this.auth = new AuthenticationService_1.AuthenticationService(req.headers.authentication);
+            this.auth = new AuthenticationService_1.AuthenticationService({ username: req.headers.username, token: req.headers.token });
             this.auth.isloggedIn.then(resp => {
                 if (resp.status == true) {
                     this.permission = new PermissionManager_1.PermissionManager(req.headers.authentication, req.path);
@@ -22,14 +22,17 @@ class ServerManager {
                 else {
                     res.send(401).json({ "message": "Please loggin to continue" });
                 }
+            }).catch(err => {
+                console.log(err);
+                res.send(401).json({ "message": "Please loggin to continue" });
             });
         };
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: true }));
+        this.express.use("/app/*", this.validateUser);
         this.routes.forEach(route => {
             this.express[route.method](route.path, this.multerU.array(), route.handlerfunc);
         });
-        this.express.use("/app", this.validateUser);
     }
     start() {
         this.express.listen(this.port, () => console.log(`Open app listening on port ${this.port}!`));

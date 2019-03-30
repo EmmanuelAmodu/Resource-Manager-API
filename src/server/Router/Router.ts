@@ -46,7 +46,7 @@ export const router: IRoutes[] = [
         }
     },
 
-    // Form service
+    // FormService
     {
         method: "get",
         path: "/app/forms",

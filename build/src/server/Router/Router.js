@@ -44,7 +44,7 @@ exports.router = [
             getServ.createUser().then(data => res.send(data)).catch(err => res.send(err));
         }
     },
-    // Form service
+    // FormService
     {
         method: "get",
         path: "/app/forms",

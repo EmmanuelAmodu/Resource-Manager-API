@@ -17,23 +17,25 @@ export class ServerManager {
     constructor() {
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: true }));
+        this.express.use("/app/*", this.validateUser);
 
         this.routes.forEach(route => {
             this.express[route.method](route.path, this.multerU.array(), route.handlerfunc);
         });
-
-        this.express.use("/app", this.validateUser);
     }
 
     private validateUser = (req: Express.Request, res: Express.Response, next) => {
-        this.auth = new AuthenticationService(req.headers.authentication);
+        this.auth = new AuthenticationService({username: req.headers.username, token: req.headers.token});
         this.auth.isloggedIn.then(resp => {
             if (resp.status == true) {
                 this.permission = new PermissionManager(req.headers.authentication, req.path);
                 this.permission.isPermitted() ? next() : res.send(401).json({"message": "You don't have permission to access this resource"});
             } else {
-                res.send(401).json({"message": "Please loggin to continue"});
+                res.send(401).json({"message": "Please login to continue"});
             }
+        }).catch(err => {
+            console.log(err);
+            res.send(401).json({"message": "Please login to continue"});
         });
     }
 

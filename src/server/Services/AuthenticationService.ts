@@ -39,9 +39,23 @@ export class AuthenticationService {
 
     public createUser() {
         return new Promise<boolean>((resolve, reject) => {
-            this.openDB('usertable', this.auth).create()
-                .then(res => resolve(true))
-                .catch(res => reject(res))
+            this.checkUserExist(["email", "username"]).then(res => {
+                res ? this.openDB('usertable', this.auth).create()
+                        .then(res => resolve(true))
+                            .catch(res => reject(res)) 
+                    : resolve(false);
+            });
+        });
+    }
+
+    private checkUserExist(properties: string[]){
+        const userObj = properties.map(e => {
+            return {[e]: this.auth[e]};
+        });
+        return new Promise<boolean>((resolve, reject) => {
+                this.openDB('usertable', {$or: userObj}).read()
+                    .then(res => res == 0 ? resolve(true) : resolve(false))
+                        .catch(err => reject(false));
         });
     }
 
