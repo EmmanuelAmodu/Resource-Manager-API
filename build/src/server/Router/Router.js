@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AuthenticationService_1 = require("../Services/AuthenticationService");
 const FormService_1 = require("../Services/FormService");
 exports.router = [
-    //Authentication
+    //Authentication Service
     {
         method: "post",
         path: "/auth/login",
@@ -44,7 +44,7 @@ exports.router = [
             getServ.createUser().then(data => res.send(data)).catch(err => res.send(err));
         }
     },
-    // FormService
+    // Form Service
     {
         method: "get",
         path: "/app/forms",

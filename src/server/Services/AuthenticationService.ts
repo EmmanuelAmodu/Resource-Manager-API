@@ -84,7 +84,7 @@ export class AuthenticationService {
 
     private checkIfLoggedIn() {
         return new Promise<{status:boolean}>((resolve, reject) => {
-            this.auth.token.length > 0 ?
+            this.auth.token && this.auth.token.length > 0 ?
             this.openDB("usertoken", this.auth).read().then(res => {
                 if (res.length > 0) {
                     this.validateToken({username: this.auth.username}, res)
@@ -100,10 +100,10 @@ export class AuthenticationService {
         return new Promise<any>((resolve, reject) => {
             this.openDB("usertoken", update)
                 .read().then(data => {
-                    this.validateToken(update, data).then(res => {
-                        resolve(res);
-                    }).catch(err => reject({"status": "login failed at getToken(), please try again"}));
-                }).catch(err => reject({"status": "login failed at getToken(), please try again"}));
+                    this.validateToken(update, data)
+                        .then(res => resolve(res))
+                        .catch(err => reject({"status": "login failed at getToken() while validateToken(), please try again", err: err}));
+                }).catch(err => reject(err));
         });
     }
 
@@ -113,7 +113,7 @@ export class AuthenticationService {
                 let expiry = parseInt(data[0].expiry);
                 if (new Date().getTime() >= expiry) {
                     this.logout(update)
-                        .then(res => reject({"err": "token expired"}))
+                        .then(res => this.setToken(update).then(res => {resolve(res)}).catch((err => reject(err))))
                             .catch(res => reject({"err": "error validating user"}));
                 } else resolve(data);
             }

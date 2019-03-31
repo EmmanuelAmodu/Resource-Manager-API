@@ -4,7 +4,7 @@ import { FormService } from "../Services/FormService";
 
 export const router: IRoutes[] = [
 
-    //Authentication
+    //Authentication Service
     {
         method: "post",
         path: "/auth/login",
@@ -46,7 +46,7 @@ export const router: IRoutes[] = [
         }
     },
 
-    // FormService
+    // Form Service
     {
         method: "get",
         path: "/app/forms",
