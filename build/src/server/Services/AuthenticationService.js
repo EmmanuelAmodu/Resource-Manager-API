@@ -28,9 +28,9 @@ class AuthenticationService {
     logout(usertoken) {
         return new Promise((resolve, reject) => {
             this.deleteToken(usertoken || this.auth).then(res => {
-                resolve(res);
+                resolve({ "status": true });
             }).catch(err => {
-                reject({ "status": "login failed" });
+                reject({ "status": false });
             });
         });
     }
@@ -105,7 +105,7 @@ class AuthenticationService {
                 let expiry = parseInt(data[0].expiry);
                 if (new Date().getTime() >= expiry) {
                     this.logout(update)
-                        .then(res => this.setToken(update).then(res => { resolve(res); }).catch((err => reject(err))))
+                        .then(res => resolve(res))
                         .catch(res => reject({ "err": "error validating user" }));
                 }
                 else
@@ -138,7 +138,7 @@ class AuthenticationService {
                 userdetail.token = buffer.toString('hex');
                 this.openDB("usertoken", userdetail).create().then(res => {
                     if (res.ok == 1)
-                        resolve(userdetail);
+                        resolve([userdetail]);
                 }).catch(err => reject({ "status": "login failed at setToken(), please try again", err: err }));
             });
         });
