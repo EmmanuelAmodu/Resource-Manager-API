@@ -33,13 +33,7 @@ export class OpenDBConnector {
         this.options.url = this.options.url + action + '/' + this.modelName;
         const that = this;
         return new Promise<any>(function(resolve, reject) {
-            request.post(that.options.url, { json: that.body }, (err, resp, body) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(body);
-                }
-            });
+            request.post(that.options.url, { json: that.body }, (err, resp, body) => err ?  reject(err) : resolve(body));
         });
     }
 }

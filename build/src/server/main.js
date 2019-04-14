@@ -13,8 +13,8 @@ class ServerManager {
         this.multerU = multer();
         this.express = Express();
         this.validateUser = (req, res, next) => {
-            const username = req.body.username || req.query.username;
-            const token = req.body.token || req.query.token;
+            const username = req.headers.username || req.query.username;
+            const token = req.headers.token || req.query.token;
             this.auth = new AuthenticationService_1.AuthenticationService({ username: username, token: token });
             this.auth.isloggedIn.then(resp => {
                 if (resp.status == true) {
@@ -37,7 +37,10 @@ class ServerManager {
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: true }));
         this.express.use(this.setHeaders);
-        this.express.use("/app/*", this.validateUser);
+        // TODO add custome validation to the options
+        this.express.options("/*", (req, res) => res.sendStatus(200));
+        this.express.get("/app/*", this.validateUser);
+        this.express.post("/app/*", this.validateUser);
         this.routes.forEach(route => {
             this.express[route.method](route.path, this.multerU.array(), route.handlerfunc);
         });

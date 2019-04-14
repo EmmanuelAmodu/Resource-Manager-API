@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AuthenticationService_1 = require("../Services/AuthenticationService");
 const FormService_1 = require("../Services/FormService");
 const util_1 = require("util");
+const MenuService_1 = require("../Services/MenuService");
 exports.router = [
-    //Authentication Service
+    // Authentication Service
     {
         method: "post",
         path: "/auth/login",
@@ -59,29 +60,44 @@ exports.router = [
         path: "/app/forms",
         handlerfunc: function (req, res) {
             const getServ = new FormService_1.FormService(req.body);
-            getServ.setFormData().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+            getServ.setFormDataField().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    {
+        method: "post",
+        path: "/app/forms/save",
+        handlerfunc: function (req, res) {
+            const getServ = new FormService_1.FormService(req.body);
+            getServ.saveFormData().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    // Menu Service
+    {
+        method: "post",
+        path: "/app/menu",
+        handlerfunc: function (req, res) {
+            const getServ = new MenuService_1.MenuService(req.body);
+            getServ.saveMenu().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    {
+        method: "get",
+        path: "/app/menu",
+        handlerfunc: function (req, res) {
+            const getServ = new MenuService_1.MenuService(req.body);
+            getServ.getMenu().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
         }
     }
 ];
 function cleanUpData(data) {
+    const arr = ["_id", "password", "expiry"];
     if (util_1.isArray(data)) {
         data = data.map(el => {
-            if (el._id)
-                delete el._id;
-            if (el.password)
-                delete el.password;
-            if (el.expiry)
-                delete el.expiry;
+            arr.forEach(e => el[e] ? delete el[e] : el[e]);
             return el;
         });
     }
-    else {
-        if (data._id)
-            delete data._id;
-        if (data.password)
-            delete data.password;
-        if (data.expiry)
-            delete data.expiry;
-    }
+    else
+        arr.forEach(e => data[e] ? delete data[e] : data[e]);
     return data;
 }

@@ -2,10 +2,11 @@ import { IRoutes } from "./IRoutes";
 import { AuthenticationService } from '../Services/AuthenticationService';
 import { FormService } from "../Services/FormService";
 import { isArray } from "util";
+import { MenuService } from "../Services/MenuService";
 
 export const router: IRoutes[] = [
 
-    //Authentication Service
+    // Authentication Service
     {
         method: "post",
         path: "/auth/login",
@@ -61,23 +62,44 @@ export const router: IRoutes[] = [
         path: "/app/forms",
         handlerfunc: function (req, res) {
             const getServ = new FormService(req.body);
-            getServ.setFormData().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+            getServ.setFormDataField().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    {
+        method: "post",
+        path: "/app/forms/save",
+        handlerfunc: function (req, res) {
+            const getServ = new FormService(req.body);
+            getServ.saveFormData().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+
+    // Menu Service
+    {
+        method: "post",
+        path: "/app/menu",
+        handlerfunc: function (req, res) {
+            const getServ = new MenuService(req.body);
+            getServ.saveMenu().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    {
+        method: "get",
+        path: "/app/menu",
+        handlerfunc: function (req, res) {
+            const getServ = new MenuService({});
+            getServ.getMenu().then(data => res.send(cleanUpData(data))).catch(err => res.send(cleanUpData(err)));
         }
     }
 ];
 
 function cleanUpData(data: any) {
+    const arr = ["_id", "password", "expiry"];
     if (isArray(data)) {
         data = data.map(el => {
-            if(el._id) delete el._id;
-            if(el.password) delete el.password;
-            if(el.expiry) delete el.expiry;
+            arr.forEach(e => el[e] ?  delete el[e] : el[e]);
             return el;
         });
-    } else {
-        if(data._id) delete data._id;
-        if(data.password) delete data.password;
-        if(data.expiry) delete data.expiry;
-    }
+    } else arr.forEach(e => data[e] ?  delete data[e] : data[e]);
     return data;
 }
