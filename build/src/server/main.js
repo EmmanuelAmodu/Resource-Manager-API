@@ -42,7 +42,7 @@ class ServerManager {
         this.express.get("/app/*", this.validateUser);
         this.express.post("/app/*", this.validateUser);
         this.routes.forEach(route => {
-            this.express[route.method](route.path, this.multerU.array(), route.handlerfunc);
+            this.express[route.method](route.path, this.multerU.array(), route.handler);
         });
     }
     start() {

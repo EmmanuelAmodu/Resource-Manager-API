@@ -12,9 +12,11 @@ class GridDataService {
         return this.getData();
     }
     getData() {
-        this.openDB(this.params.entity, this.params.query).read();
-    }
-    sqlInterpreter() {
+        return new Promise((resolve, reject) => {
+            this.openDB(this.params.entity, this.params.query).read()
+                .then(res => resolve(res))
+                .catch(err => reject(err));
+        });
     }
 }
 exports.GridDataService = GridDataService;

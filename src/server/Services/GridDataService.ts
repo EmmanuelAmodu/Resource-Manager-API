@@ -14,11 +14,11 @@ export class GridDataService {
     }
 
     private getData() {
-        this.openDB(this.params.entity, this.params.query).read()
-    }
-
-    private sqlInterpreter(){
-
+        return new Promise<any>((resolve, reject) => {
+            this.openDB(this.params.entity, this.params.query).read()
+                .then(res => resolve(res))
+                    .catch(err => reject(err));
+        });
     }
 
 }

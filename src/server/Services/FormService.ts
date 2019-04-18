@@ -28,7 +28,7 @@ export class FormService {
         });
     }
 
-    public saveFormData() {
+    protected saveFormData() {
         return new Promise<any>((resolve, reject) => {
             this.openDB(this.params.data_model, this.params.data).create().then(res => {
                 resolve(res);
