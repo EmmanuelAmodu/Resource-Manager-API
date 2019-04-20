@@ -1,11 +1,11 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
-class RoleManager {
+class RoleManager extends OpenDBConnector {
     /**
      *
      */
-    constructor(private user) {
-        
+    constructor(private user) { 
+        super()
     }
 
     assignRole

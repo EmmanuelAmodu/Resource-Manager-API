@@ -7,8 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "nodemon",
-            "runtimeExecutable": "nodemon",
+            "name": "Build and Run",
             "program": "${workspaceFolder}/build/main.js",
             "preLaunchTask": "tsc: build - tsconfig.json",
             "cwd": "${workspaceFolder}",

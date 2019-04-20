@@ -1,12 +1,10 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
-export class GridDataService {
+export class GridDataService extends OpenDBConnector {
     private queryObject: any;
 
-    constructor(private params: any){}
-
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
+    constructor(private params: any){
+        super();
     }
 
     public get data() {
@@ -15,7 +13,7 @@ export class GridDataService {
 
     private getData() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB(this.params.entity, this.params.query).read()
+            this.read(this.params.entity, this.params.query)
                 .then(res => resolve(res))
                     .catch(err => reject(err));
         });

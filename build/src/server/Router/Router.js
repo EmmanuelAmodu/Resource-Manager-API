@@ -133,3 +133,4 @@ function cleanUpData(data) {
         arr.forEach(e => data[e] ? delete data[e] : data[e]);
     return data;
 }
+//# sourceMappingURL=Router.js.map

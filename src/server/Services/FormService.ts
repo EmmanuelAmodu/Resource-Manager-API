@@ -1,20 +1,18 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
-export class FormService {
+export class FormService extends OpenDBConnector  {
 
-    constructor(private params: any){}
+    constructor(private params: any){
+        super()
+    }
 
     public get formData () {
         return this.getFormDataField();
     }
 
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
-    }
-
     private getFormDataField() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB("formData", {form_name: this.params.form_name}).read().then(res => {
+            this.read("formData", {form_name: this.params.form_name}).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
@@ -22,7 +20,7 @@ export class FormService {
 
     public setFormDataField() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB("formData", this.params).create().then(res => {
+            this.create("formData", this.params).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
@@ -30,7 +28,7 @@ export class FormService {
 
     protected saveFormData() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB(this.params.data_model, this.params.data).create().then(res => {
+            this.create(this.params.data_model, this.params.data).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
@@ -38,7 +36,7 @@ export class FormService {
 
     public getFormData() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB(this.params.data_model, this.params.data).read().then(res => {
+            this.read(this.params.data_model, this.params.data).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });

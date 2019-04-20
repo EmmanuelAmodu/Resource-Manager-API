@@ -2,11 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
 class OpenDBConnector {
-    constructor(modelName, body) {
-        this.modelName = modelName;
-        this.body = body;
+    constructor() {
         this.options = {
-            url: 'http://localhost:8900/api/',
             auth: {
                 'user': 'testOPENDB',
                 'pass': 'PASSWOEDOPENDB',
@@ -14,25 +11,35 @@ class OpenDBConnector {
             }
         };
     }
-    create() {
+    create(collection, query) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("create");
     }
-    read() {
+    read(collection, query) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("read");
     }
-    update() {
+    update(collection, query) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("update");
     }
-    delete() {
+    delete(collection, query) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("delete");
+    }
+    url(action) {
+        return 'http://localhost:8900/api/' + action + '/' + this.collection;
     }
     operate(action) {
         this.options.body = this.body;
-        this.options.url = this.options.url + action + '/' + this.modelName;
-        const that = this;
-        return new Promise(function (resolve, reject) {
-            request.post(that.options.url, { json: that.body }, (err, resp, body) => err ? reject(err) : resolve(body));
+        return new Promise((resolve, reject) => {
+            request.post(this.url(action), { json: this.body }, (err, resp, body) => err ? reject(err) : resolve(body));
         });
     }
 }
 exports.OpenDBConnector = OpenDBConnector;
+//# sourceMappingURL=OpenDBConnector.js.map

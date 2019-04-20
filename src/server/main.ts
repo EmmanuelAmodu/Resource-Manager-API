@@ -51,6 +51,9 @@ export class ServerManager {
     }
 
     public start() {
-        this.express.listen(this.port, () => console.log(`Open app listening on port ${this.port}!`));
+        this.express.listen(this.port, () => {
+            console.log(`Open app listening on port ${this.port}!`);
+            
+        });
     }
 }

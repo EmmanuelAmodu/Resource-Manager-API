@@ -2,38 +2,50 @@ import * as request from 'request';
 
 export class OpenDBConnector {
     private options: any = {
-        url: 'http://localhost:8900/api/',
         auth: {
             'user': 'testOPENDB',
             'pass': 'PASSWOEDOPENDB',
             'sendImmediately': false
         }
     };
-    
-    constructor(private modelName: string, private body: any) {}
 
-    public create() {
+    private collection: string;
+    private body: any;
+    
+    constructor() {}
+
+    public create(collection: string, query: any) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("create");
     }
 
-    public read() {
+    public read(collection: string, query: any) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("read");
     }
 
-    public update() {
+    public update(collection: string, query: any) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("update");
     }
 
-    public delete() {
+    public delete(collection: string, query: any) {
+        this.collection = collection;
+        this.body = query;
         return this.operate("delete");
+    }
+
+    private url(action: string) {
+        return 'http://localhost:8900/api/' + action + '/' + this.collection;
     }
 
     private operate(action: string) {
         this.options.body = this.body;
-        this.options.url = this.options.url + action + '/' + this.modelName;
-        const that = this;
-        return new Promise<any>(function(resolve, reject) {
-            request.post(that.options.url, { json: that.body }, (err, resp, body) => err ?  reject(err) : resolve(body));
+        return new Promise<any>((resolve, reject) => {
+            request.post(this.url(action), { json: this.body }, (err, resp, body) => err ?  reject(err) : resolve(body));
         });
     }
 }

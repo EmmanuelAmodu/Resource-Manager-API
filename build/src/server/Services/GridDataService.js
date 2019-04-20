@@ -1,22 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const OpenDBConnector_1 = require("../../OpenDBConnector/OpenDBConnector");
-class GridDataService {
+class GridDataService extends OpenDBConnector_1.OpenDBConnector {
     constructor(params) {
+        super();
         this.params = params;
-    }
-    openDB(table, body) {
-        return new OpenDBConnector_1.OpenDBConnector(table, body);
     }
     get data() {
         return this.getData();
     }
     getData() {
         return new Promise((resolve, reject) => {
-            this.openDB(this.params.entity, this.params.query).read()
+            this.read(this.params.entity, this.params.query)
                 .then(res => resolve(res))
                 .catch(err => reject(err));
         });
     }
 }
 exports.GridDataService = GridDataService;
+//# sourceMappingURL=GridDataService.js.map

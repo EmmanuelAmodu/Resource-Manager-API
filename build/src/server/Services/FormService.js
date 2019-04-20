@@ -1,43 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const OpenDBConnector_1 = require("../../OpenDBConnector/OpenDBConnector");
-class FormService {
+class FormService extends OpenDBConnector_1.OpenDBConnector {
     constructor(params) {
+        super();
         this.params = params;
     }
     get formData() {
         return this.getFormDataField();
     }
-    openDB(table, body) {
-        return new OpenDBConnector_1.OpenDBConnector(table, body);
-    }
     getFormDataField() {
         return new Promise((resolve, reject) => {
-            this.openDB("formData", { form_name: this.params.form_name }).read().then(res => {
+            this.read("formData", { form_name: this.params.form_name }).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
     }
     setFormDataField() {
         return new Promise((resolve, reject) => {
-            this.openDB("formData", this.params).create().then(res => {
+            this.create("formData", this.params).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
     }
     saveFormData() {
         return new Promise((resolve, reject) => {
-            this.openDB(this.params.data_model, this.params.data).create().then(res => {
+            this.create(this.params.data_model, this.params.data).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
     }
     getFormData() {
         return new Promise((resolve, reject) => {
-            this.openDB(this.params.data_model, this.params.data).read().then(res => {
+            this.read(this.params.data_model, this.params.data).then(res => {
                 resolve(res);
             }).catch(err => reject(err));
         });
     }
 }
 exports.FormService = FormService;
+//# sourceMappingURL=FormService.js.map

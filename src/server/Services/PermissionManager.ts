@@ -1,19 +1,17 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
 // TODO DESIGN this class logic
-export class PermissionManager {
+export class PermissionManager extends OpenDBConnector {
     /**
      *
      */
-    constructor(private username, private path) {}
+    constructor(private username: string| string[], private path: string) {
+        super();
+    }
 
     public isPermitted(){
         // TODO implement is permitted
         return true;
-    }
-
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
     }
 
     public setPermission(){

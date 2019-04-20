@@ -1,14 +1,11 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
-export class ProductRequestService {
+export class ProductRequestService extends OpenDBConnector {
     constructor(private params: any) {
+        super();
     }
 
     public statusCode = 200;
-
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
-    }
 
     public makeRequest() {
         return this.request();
@@ -20,7 +17,7 @@ export class ProductRequestService {
 
     private pendingRequest(data_model: string, query: any) {
         return new Promise<any>((resolve, reject) => {
-            this.openDB(data_model, query).read()
+            this.read(data_model, query)
                 .then(res => resolve(res))
                     .catch(err => reject(err));
         });
@@ -45,8 +42,7 @@ export class ProductRequestService {
                     this.params.data._id = 'REQ-' + this.genOrderid();
                     this.params.data.orderid = this.params.data._id;
                     this.params.data.status = 'initiated';
-                    console.log(this.params.data);
-                    this.openDB(this.params.data_model, this.params.data).create()
+                    this.create(this.params.data_model, this.params.data)
                         .then(res => resolve(res))
                         .catch(err => {
                             this.statusCode = 500;

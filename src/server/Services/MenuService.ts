@@ -1,16 +1,14 @@
 import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
 
-export class MenuService {
+export class MenuService extends OpenDBConnector {
 
-    constructor(private params: any){}
-
-    private openDB(table: string, body: any): OpenDBConnector {
-        return new OpenDBConnector(table, body);
+    constructor(private params: any){
+        super()
     }
 
     public getMenu() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB("menu", this.params).read().then(res => {
+            this.read("menu", this.params).then(res => {
                 resolve(res);
             }).catch(err => {
                 // TODO improve response
@@ -21,7 +19,7 @@ export class MenuService {
 
     public saveMenu() {
         return new Promise<any>((resolve, reject) => {
-            this.openDB("menu", this.params).create().then(res => {
+            this.create("menu", this.params).then(res => {
                 // TODO improve response
                 resolve(res);
             }).catch(err => {
