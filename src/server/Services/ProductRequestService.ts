@@ -12,7 +12,7 @@ export class ProductRequestService extends OpenDBConnector {
     }
 
     public get getRequest() {
-        return this.pendingRequest(this.params.data_model, {});
+        return this.pendingRequest("product_request", { "station_name": this.params.station_name });
     }
 
     private pendingRequest(data_model: string, query: any) {
@@ -36,13 +36,12 @@ export class ProductRequestService extends OpenDBConnector {
 
     private request() {
         return new Promise<any>((resolve, reject) => {
-            const productType = this.params.data.product_type;
-            this.pendingRequest(this.params.data_model, {product_type: productType}).then(res => {
+            this.pendingRequest("product_request", {product_type: this.params.data.product_type}).then(res => {
                 if (res.length === 0) {
                     this.params.data._id = 'REQ-' + this.genOrderid();
                     this.params.data.orderid = this.params.data._id;
                     this.params.data.status = 'initiated';
-                    this.create(this.params.data_model, this.params.data)
+                    this.create("product_request", this.params.data)
                         .then(res => resolve(res))
                         .catch(err => {
                             this.statusCode = 500;
