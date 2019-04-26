@@ -5,6 +5,7 @@ const FormService_1 = require("../Services/FormService");
 const util_1 = require("util");
 const MenuService_1 = require("../Services/MenuService");
 const ProductRequestService_1 = require("../Services/ProductRequestService");
+const ExcelFileGenerator_1 = require("../Services/ExcelFileGenerator");
 exports.router = [
     // Authentication Service
     {
@@ -118,6 +119,18 @@ exports.router = [
             getServ.getMenu()
                 .then(data => res.send(cleanUpData(data)))
                 .catch(err => res.send(cleanUpData(err)));
+        }
+    },
+    // File service
+    {
+        method: 'get',
+        path: '/file/excel',
+        handler: function (req, res) {
+            const getServ = new ExcelFileGenerator_1.ExcelFileGenerator('', {});
+            // res.send({});
+            getServ.writeDataToExcel()
+                .then(path => res.download(path))
+                .catch(err => res.send(err));
         }
     }
 ];

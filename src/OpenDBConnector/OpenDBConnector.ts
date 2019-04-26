@@ -9,6 +9,7 @@ export class OpenDBConnector {
         }
     };
 
+    private dbName: string = 'OperationsManagerDB';
     private collection: string;
     private body: any;
     
@@ -39,7 +40,7 @@ export class OpenDBConnector {
     }
 
     private url(action: string) {
-        return 'http://localhost:8900/api/' + action + '/' + this.collection;
+        return 'http://localhost:8900/api/' + action + '/' + this.dbName + '/' + this.collection;
     }
 
     private operate(action: string) {

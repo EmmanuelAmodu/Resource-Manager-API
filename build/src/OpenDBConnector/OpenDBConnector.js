@@ -10,6 +10,7 @@ class OpenDBConnector {
                 'sendImmediately': false
             }
         };
+        this.dbName = 'OperationsManagerDB';
     }
     create(collection, query) {
         this.collection = collection;
@@ -32,7 +33,7 @@ class OpenDBConnector {
         return this.operate("delete");
     }
     url(action) {
-        return 'http://localhost:8900/api/' + action + '/' + this.collection;
+        return 'http://localhost:8900/api/' + action + '/' + this.dbName + '/' + this.collection;
     }
     operate(action) {
         this.options.body = this.body;

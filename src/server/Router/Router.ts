@@ -4,6 +4,7 @@ import { FormService } from "../Services/FormService";
 import { isArray } from "util";
 import { MenuService } from "../Services/MenuService";
 import { ProductRequestService } from "../Services/ProductRequestService";
+import { ExcelFileGenerator } from "../Services/ExcelFileGenerator";
 
 export const router: IRoutes[] = [
 
@@ -122,6 +123,19 @@ export const router: IRoutes[] = [
             getServ.getMenu()
                 .then(data => res.send(cleanUpData(data)))
                     .catch(err => res.send(cleanUpData(err)));
+        }
+    },
+
+    // File service
+    {
+        method: 'get',
+        path: '/file/excel',
+        handler: function(req, res) {
+            const getServ = new ExcelFileGenerator('', {});
+            // res.send({});
+            getServ.writeDataToExcel()
+                .then(path => res.download(path))
+                    .catch(err => res.send(err));
         }
     }
 ];
