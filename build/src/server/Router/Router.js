@@ -124,10 +124,9 @@ exports.router = [
     // File service
     {
         method: 'get',
-        path: '/file/excel',
+        path: '/file',
         handler: function (req, res) {
-            const getServ = new ExcelFileGenerator_1.ExcelFileGenerator('', {});
-            // res.send({});
+            const getServ = new ExcelFileGenerator_1.ExcelFileGenerator(req.query.fileName);
             getServ.writeDataToExcel()
                 .then(path => res.download(path))
                 .catch(err => res.send(err));

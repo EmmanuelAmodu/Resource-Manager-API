@@ -6,7 +6,7 @@ export class ExcelFileGenerator {
     private workbook: Workbook;
     private headerStyle: any;
 
-    constructor(datamodel: string, query: {}) {
+    constructor(public fileName: string) {
         this.workbook = new Workbook();
         this.headerStyle = this.workbook.createStyle({
             font: {
@@ -21,8 +21,8 @@ export class ExcelFileGenerator {
         this.setExcelValues('Sheet 1', {});
         
         return new Promise<any>((resolve, reject) => {
-            this.workbook.writeToBuffer().then(function(buffer: Buffer) {
-                var wstream = fs.createWriteStream('Excel2.xlsx');
+            this.workbook.writeToBuffer().then((buffer: Buffer) => {
+                var wstream = fs.createWriteStream(this.fileName + '.xlsx');
                 wstream.write(buffer, (err) => {
                     if (!err) resolve(path.join(__dirname + "../../../../../" + wstream.path));
                     reject(err);
@@ -32,7 +32,7 @@ export class ExcelFileGenerator {
         });
     }
     
-    private setExcelValues(sheetName, json) {
+    private setExcelValues(sheetName, json = {}) {
         const ws = this.workbook.addWorksheet(sheetName);
         ws.cell(1, 1).number(100).style(this.headerStyle);
         ws.cell(1, 2).number(200);
