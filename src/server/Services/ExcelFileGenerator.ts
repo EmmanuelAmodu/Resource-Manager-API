@@ -4,21 +4,21 @@ import * as path from 'path';
 
 export class ExcelFileGenerator {
     private workbook: Workbook;
+    private headerStyle: any;
 
     constructor(datamodel: string, query: {}) {
         this.workbook = new Workbook();
+        this.headerStyle = this.workbook.createStyle({
+            font: {
+                color: '#FF0800',
+                size: 12,
+            },
+            numberFormat: '$#,##0.00; ($#,##0.00); -',
+        });
     }
 
     public writeDataToExcel() {
-        const style = this.workbook.createStyle({
-          font: {
-            color: '#FF0800',
-            size: 12,
-          },
-          numberFormat: '$#,##0.00; ($#,##0.00); -',
-        });
-         
-        this.setExcelValues('Sheet 1', style, {})
+        this.setExcelValues('Sheet 1', {});
         
         return new Promise<any>((resolve, reject) => {
             this.workbook.writeToBuffer().then(function(buffer: Buffer) {
@@ -32,9 +32,9 @@ export class ExcelFileGenerator {
         });
     }
     
-    private setExcelValues(sheetName, style, json) {
+    private setExcelValues(sheetName, json) {
         const ws = this.workbook.addWorksheet(sheetName);
-        ws.cell(1, 1).number(100).style(style);
+        ws.cell(1, 1).number(100).style(this.headerStyle);
         ws.cell(1, 2).number(200);
         ws.cell(1, 3).formula('A1 + B1');
         ws.cell(2, 1).string('string');
