@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { OpenDBConnector } from '../Providers/OpenDBConnector';
 import { ExcelFileGenerator } from '../Providers/ExcelFileGenerator';
+import { GenOrderid } from '../Providers/IDSequenceGenerator';
 
 export class ReportService extends OpenDBConnector {
     private efg: ExcelFileGenerator;
@@ -22,7 +23,7 @@ export class ReportService extends OpenDBConnector {
     }
 
     private makeFile() {
-        const reportID = this.genOrderid("RPT")
+        const reportID = GenOrderid("RPT");
         return new Promise<any>((resolve, reject) => {
             this.getData().then(data => {
                 this.efg = new ExcelFileGenerator(reportID, {
@@ -43,16 +44,4 @@ export class ReportService extends OpenDBConnector {
     get file() {
         return this.makeFile();
     }
-
-    private genOrderid(pre: string) {
-        const date = new Date(),
-        year = date.getFullYear(),
-        month = date.getMonth() + 1,
-        month_str = month > 10 ? month : "0" + month,
-        day = date.getDate(),
-        day_str = day > 10 ? day : "0" + day,
-        secs = (date.getHours() * 60 * 60) + (date.getMinutes() * 60) + date.getSeconds();
-        return  pre + "-" + year + "" + month_str + "" + day_str  + "-" + secs;
-    }
-
 }
