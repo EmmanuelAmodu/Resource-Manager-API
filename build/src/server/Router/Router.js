@@ -5,7 +5,7 @@ const FormService_1 = require("../Services/FormService");
 const util_1 = require("util");
 const MenuService_1 = require("../Services/MenuService");
 const ProductRequestService_1 = require("../Services/ProductRequestService");
-const ExcelFileGenerator_1 = require("../Services/ExcelFileGenerator");
+const ReportService_1 = require("../Services/ReportService");
 exports.router = [
     // Authentication Service
     {
@@ -126,8 +126,8 @@ exports.router = [
         method: 'get',
         path: '/file',
         handler: function (req, res) {
-            const getServ = new ExcelFileGenerator_1.ExcelFileGenerator(req.query.fileName);
-            getServ.writeDataToExcel()
+            const getServ = new ReportService_1.ReportService(req.query);
+            getServ.file
                 .then(path => res.download(path))
                 .catch(err => res.send(err));
         }

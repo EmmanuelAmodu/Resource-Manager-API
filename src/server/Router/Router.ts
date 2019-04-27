@@ -4,7 +4,8 @@ import { FormService } from "../Services/FormService";
 import { isArray } from "util";
 import { MenuService } from "../Services/MenuService";
 import { ProductRequestService } from "../Services/ProductRequestService";
-import { ExcelFileGenerator } from "../Services/ExcelFileGenerator";
+import { ExcelFileGenerator } from "../Providers/ExcelFileGenerator";
+import { ReportService } from "../Services/ReportService";
 
 export const router: IRoutes[] = [
 
@@ -131,8 +132,8 @@ export const router: IRoutes[] = [
         method: 'get',
         path: '/file',
         handler: function(req, res) {
-            const getServ = new ExcelFileGenerator(req.query.fileName);
-            getServ.writeDataToExcel()
+            const getServ = new ReportService(req.query);
+            getServ.file
                 .then(path => res.download(path))
                     .catch(err => res.send(err));
         }

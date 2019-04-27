@@ -15,25 +15,25 @@ export class OpenDBConnector {
     
     constructor() {}
 
-    public create(collection: string, query: any) {
+    protected create(collection: string, query: any) {
         this.collection = collection;
         this.body = query;
         return this.operate("create");
     }
 
-    public read(collection: string, query: any) {
+    protected read(collection: string, query: any) {
         this.collection = collection;
         this.body = query;
         return this.operate("read");
     }
 
-    public update(collection: string, query: any) {
+    protected update(collection: string, query: any) {
         this.collection = collection;
         this.body = query;
         return this.operate("update");
     }
 
-    public delete(collection: string, query: any) {
+    protected delete(collection: string, query: any) {
         this.collection = collection;
         this.body = query;
         return this.operate("delete");

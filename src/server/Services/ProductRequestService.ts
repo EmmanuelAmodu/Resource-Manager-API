@@ -1,4 +1,4 @@
-import { OpenDBConnector } from '../../OpenDBConnector/OpenDBConnector';
+import { OpenDBConnector } from '../Providers/OpenDBConnector';
 
 export class ProductRequestService extends OpenDBConnector {
     constructor(private params: any) {

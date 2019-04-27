@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const OpenDBConnector_1 = require("../../OpenDBConnector/OpenDBConnector");
+const OpenDBConnector_1 = require("../Providers/OpenDBConnector");
 class GridDataService extends OpenDBConnector_1.OpenDBConnector {
     constructor(params) {
         super();
